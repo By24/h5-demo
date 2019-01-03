@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Dragonbones骨骼动画换肤（旧版,不支持新版纹理数据,停用）</title>
+	<script type="text/javascript" src="../libs/pixi.js"></script>
+	<script type="text/javascript" src="../Egret/dragonBones.js"></script>
+	<script type="text/javascript" src="../Egret/dragonBonesPixi.js"></script>
+</head>
+
+<body>
+	<script>
+		var app = new PIXI.Application(800, 600, {
+			backgroundColor: 0x1099bb
+		});
+		document.body.appendChild(app.view);
+
+		PIXI.loader.reset();
+		PIXI.loader
+			.add("dragonBonesData", "../dragonbones/002/Bicycle_ske.json")
+			.add("textureData", "../dragonbones/002/Bicycle_tex.json")
+			.add("texture", "../dragonbones/002/Bicycle_tex.png");
+		PIXI.loader.once("complete", onComplete, this);
+		PIXI.loader.load();
+
+		function onComplete(target, resource) {
+			var textureImg = resource["texture"].texture;
+			var textureData = resource["textureData"].data;
+			var skeletonData = resource["dragonBonesData"].data;
+
+			var dragonbonesFactory = new dragonBones.PixiFactory();
+			dragonbonesFactory.parseDragonBonesData(skeletonData);
+			dragonbonesFactory.parseTextureAtlasData(textureData, textureImg);
+			var armatureDisplay = dragonbonesFactory.buildArmatureDisplay(skeletonData.armature[0].name);
+			armatureDisplay.animation.play('bicycle', 0);
+			armatureDisplay.x = 300;
+			armatureDisplay.y = 500;
+			armatureDisplay.scale.set(0.3, 0.3);
+			app.stage.addChild(armatureDisplay);
+			var armature = armatureDisplay._armature;
+			var tmpslot = armature.getSlot("head");
+			var texture = PIXI.Texture.fromImage("../dragonbones/002/replacehead.jpg");
+			tmpslot.display.texture = texture;
+		}
+	</script>
+</body>
+
+</html>
